@@ -244,7 +244,10 @@ fun TaskActionDialog(
             icon = Icons.Filled.Delete
         )
         ActionDialogItem(
-            onClick = { isMoveDialogShown = true },
+            onClick = {
+                isMoveDialogShown = true
+                searchForNotebooks("")
+                      },
             text = stringResource(id = R.string.task_action_move_to, taskTitle),
             icon = Icons.Filled.List
         )
@@ -277,7 +280,8 @@ fun MoveTaskDialog(
         updateSearchQuery = { newSearchQuery ->
             searchQuery = newSearchQuery
             searchForNotebooks(newSearchQuery)
-        }
+        },
+        labelText = stringResource(id = R.string.search_for_notebooks)
     ) {
         LazyColumn {
             items(notebooks) { notebook ->

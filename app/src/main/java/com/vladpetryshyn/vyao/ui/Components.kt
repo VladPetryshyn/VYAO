@@ -40,11 +40,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.vladpetryshyn.vyao.R
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -198,7 +200,8 @@ fun ItemFinderDialog(
     onDismissRequest: () -> Unit,
     searchQuery: String,
     updateSearchQuery: (query: String) -> Unit,
-    content: @Composable ColumnScope.() -> Unit
+    labelText: String = stringResource(id = R.string.search_for_tasks),
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -222,7 +225,7 @@ fun ItemFinderDialog(
                     value = searchQuery,
                     onValueChange = updateSearchQuery,
                     label = {
-                        Text("Search for Task...")
+                        Text(labelText)
                     },
                     leadingIcon = {
                         Icon(
@@ -233,7 +236,8 @@ fun ItemFinderDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Column(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
                         .padding(top = 10.dp)
                 ) {
                     content()

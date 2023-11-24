@@ -1,4 +1,13 @@
+import android.app.Activity
+import android.app.PendingIntent
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +24,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,6 +54,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vladpetryshyn.vyao.R
 import com.vladpetryshyn.vyao.repositories.room.tasks.Task
@@ -75,6 +88,70 @@ fun AddEventScreen(
     val noNotebookText = stringResource(id = R.string.no_notebook_text)
     val showToast = { Toast.makeText(context, noNotebookText, Toast.LENGTH_SHORT).show() }
 
+    var hasNotificationPermission by remember {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            mutableStateOf(
+                ContextCompat.checkSelfPermission(
+                    context,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            )
+        } else {
+            mutableStateOf(true)
+        }
+    }
+    var shouldRedirectToSettings by remember {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            mutableStateOf(ActivityCompat.shouldShowRequestPermissionRationale(
+                            context as Activity,
+                            android.Manifest.permission.POST_NOTIFICATIONS))
+        } else {
+            mutableStateOf(false)
+        }
+    }
+    
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            hasNotificationPermission = isGranted
+
+            if (!isGranted && !ActivityCompat.shouldShowRequestPermissionRationale(
+                    context as Activity,
+                    android.Manifest.permission.POST_NOTIFICATIONS)
+                ) {
+                shouldRedirectToSettings = true
+            }
+        }
+    )
+    
+    val settingsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult(),
+        onResult = {
+            hasNotificationPermission = ContextCompat.checkSelfPermission(
+                context,
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+    )
+
+    if (!hasNotificationPermission) {
+        NotificationPermissionDialog(
+            onDismiss = navigateBack,
+            onConfirm = {
+                if (shouldRedirectToSettings) {
+                    val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    intent.addCategory(Intent.CATEGORY_DEFAULT)
+                    intent.setData(Uri.parse("package:" + context.packageName))
+                    val pendIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+                    settingsLauncher.launch(IntentSenderRequest.Builder(pendIntent).build())
+                } else {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -323,4 +400,41 @@ fun TaskDialogPreview() {
             isTodoSelected = false
         )
     }
+}
+
+@Composable
+fun NotificationPermissionDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = {},
+        icon = { Icon(Icons.Filled.Notifications, contentDescription = null) },
+        title = {
+            Text(text = stringResource(id = R.string.reminders_dialog_title))
+        },
+        text = {
+            Text(
+                stringResource(id = R.string.reminders_dialog_subtitle)
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirm()
+                }
+            ) {
+                Text(stringResource(id = R.string.confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismiss()
+                }
+            ) {
+                Text(stringResource(id = R.string.dismiss))
+            }
+        }
+    )
 }

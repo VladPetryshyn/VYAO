@@ -87,4 +87,22 @@
     <string name="version">
         Version: %s
     </string>
+    <string name="reminders_channel_name">
+        Reminders
+    </string>
+    <string name="reminders_channel_description">
+        Your task reminders
+    </string>
+    <string name="reminders_dialog_title">
+        Notification Access
+    </string>
+    <string name="reminders_dialog_subtitle">
+        This app need notifications access in order to send you reminders
+    </string>
+    <string name="search_for_tasks">
+        Search for Tasks...
+    </string>
+    <string name="search_for_notebooks">
+        Search for Notebooks...
+    </string>
 </resources>
