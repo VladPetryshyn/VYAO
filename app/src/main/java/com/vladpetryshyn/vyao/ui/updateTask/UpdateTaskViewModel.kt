@@ -54,13 +54,13 @@ class UpdateTaskViewModel @Inject constructor(
         formDescription.update{description}
     }
 
-    fun createTask() {
+    fun createTask(description: String) {
         viewModelScope.launch(Dispatchers.Default) {
             if (taskId != null) {
                 taskRepository.updateTask(
                     Task(
                         title = formTitle.value,
-                        description = formDescription.value,
+                        description = description,
                         updated = Date(),
                         notebookTitle = notebookTitle,
                         id = taskId.toInt(),
@@ -72,7 +72,7 @@ class UpdateTaskViewModel @Inject constructor(
                 taskRepository.createTask(
                     Task(
                         title = formTitle.value,
-                        description = formDescription.value,
+                        description = description,
                         notebookTitle = notebookTitle,
                         updated = Date(),
                         scheduledFor = null,

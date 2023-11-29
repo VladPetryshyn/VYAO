@@ -48,16 +48,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vladpetryshyn.vyao.R
+import com.vladpetryshyn.vyao.convertMarkdownToSpannedText
+import com.vladpetryshyn.vyao.databinding.FragmentTasksCardDescriptionBinding
 import com.vladpetryshyn.vyao.repositories.room.tasks.Task
 import com.vladpetryshyn.vyao.ui.CustomDatePicker
 import com.vladpetryshyn.vyao.ui.CustomTimePicker
@@ -353,16 +358,18 @@ fun TaskDialog(
                             text = it.title,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyLarge
                         )
-                        Text(
-                            text = it.title,
-                            modifier = Modifier
-                                .padding(top = 4.dp),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.bodySmall
-                        )
+                        val textColor = MaterialTheme.colorScheme.onSurface
+                        Row(modifier = Modifier.padding(top = 4.dp)) {
+                            AndroidViewBinding(factory = FragmentTasksCardDescriptionBinding::inflate) {
+                                this.taskCardDescription.apply {
+                                    text = convertMarkdownToSpannedText(it.description)
+                                    maxLines = 2
+                                    setTextColor(textColor.toArgb())
+                                }
+                            }
+                        }
                     }
                 }
             }
