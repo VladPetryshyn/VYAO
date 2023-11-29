@@ -52,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -62,6 +63,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidViewBinding
+import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
@@ -71,6 +74,8 @@ import com.kizitonwose.calendar.core.OutDateStyle
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.vladpetryshyn.vyao.BackPressHandler
 import com.vladpetryshyn.vyao.R
+import com.vladpetryshyn.vyao.convertMarkdownToSpannedText
+import com.vladpetryshyn.vyao.databinding.FragmentTasksCardDescriptionBinding
 import com.vladpetryshyn.vyao.repositories.room.events.Event
 import com.vladpetryshyn.vyao.repositories.room.events.EventWithTask
 import com.vladpetryshyn.vyao.repositories.room.tasks.Task
@@ -271,14 +276,24 @@ fun SheetComposable(
                                         overflow = TextOverflow.Ellipsis,
                                         textDecoration = textDecoration
                                     )
-                                    Text(
-                                        text = eventWithTask.task.description,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 2,
-                                        modifier = Modifier.padding(top = 5.dp),
-                                        overflow = TextOverflow.Ellipsis,
-                                        textDecoration = textDecoration
-                                    )
+//                                    Text(
+//                                        text = eventWithTask.task.description,
+//                                        style = MaterialTheme.typography.bodyMedium,
+//                                        maxLines = 2,
+//                                        modifier = Modifier.padding(top = 5.dp),
+//                                        overflow = TextOverflow.Ellipsis,
+//                                        textDecoration = textDecoration
+//                                    )
+                                    val textColor = MaterialTheme.colorScheme.onSurface
+                                    Row(modifier = Modifier.padding(top = 4.dp)) {
+                                        AndroidViewBinding(factory = FragmentTasksCardDescriptionBinding::inflate) {
+                                            this.taskCardDescription.apply {
+                                                text = convertMarkdownToSpannedText(eventWithTask.task.description)
+                                                maxLines = 2
+                                                setTextColor(textColor.toArgb())
+                                            }
+                                        }
+                                    }
                                 }
                                 IconButton(
                                     onClick = { isEventDialogShown = true },

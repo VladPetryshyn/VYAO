@@ -1,6 +1,13 @@
 package com.vladpetryshyn.vyao.ui.tasks
 
 import android.annotation.SuppressLint
+import android.graphics.Paint
+import android.text.Html.FROM_HTML_OPTION_USE_CSS_COLORS
+import android.text.util.Linkify
+import android.util.Log
+import android.view.ViewGroup
+import android.view.inputmethod.TextAppearanceInfo
+import android.widget.TextView
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,14 +44,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.viewinterop.AndroidViewBinding
+import androidx.core.text.HtmlCompat
+import androidx.fragment.app.FragmentContainerView
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.halilibo.richtext.markdown.Markdown
+import com.halilibo.richtext.ui.RichText
+import com.halilibo.richtext.ui.RichTextStyle
+import com.halilibo.richtext.ui.material3.Material3RichText
 import com.vladpetryshyn.vyao.R
+import com.vladpetryshyn.vyao.TasksCardDescriptionFragment
+import com.vladpetryshyn.vyao.databinding.FragmentTasksCardDescriptionBinding
 import com.vladpetryshyn.vyao.pxToDp
 import com.vladpetryshyn.vyao.repositories.room.events.Event
 import com.vladpetryshyn.vyao.repositories.room.notebooks.Notebook
@@ -164,17 +182,20 @@ fun TaskCard(
             if (task.title.isNotEmpty()) {
                 Text(
                     text = task.title,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.headlineSmall,
                     textDecoration = textDecoration
                 )
             }
             if (task.description.isNotEmpty()) {
-                Text(
-                    text = task.description,
+                val primaryColor = MaterialTheme.colorScheme.primary
+                val textColor = MaterialTheme.colorScheme.onSurface
+                Material3RichText(
                     modifier = Modifier.padding(top = 4.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    textDecoration = textDecoration
-                )
+                ) {
+                    Markdown(
+                        content = task.description,
+                    )
+                }
             }
             if (events.isNotEmpty()) {
                 LazyRow(

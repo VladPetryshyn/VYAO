@@ -42,6 +42,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.7"
@@ -77,6 +78,16 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
+    // Rich text editor
+    implementation("jp.wasabeef:richeditor-android:2.0.0")
+    implementation("com.google.android.material:material:1.10.0")
+    implementation("androidx.compose.ui:ui-viewbinding:1.5.4")
+    implementation("com.halilibo.compose-richtext:richtext-ui:0.17.0")
+    implementation("com.halilibo.compose-richtext:richtext-commonmark:0.17.0")
+    implementation("com.halilibo.compose-richtext:richtext-ui-material3:0.17.0")
+    implementation("org.jetbrains:markdown:0.3.1")
+
+
     // Navigation
     val nav_version = "2.7.3"
     implementation("androidx.navigation:navigation-compose:$nav_version")
@@ -108,6 +119,10 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-beta04")
+
+    // icons
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
 }
 
 kapt {

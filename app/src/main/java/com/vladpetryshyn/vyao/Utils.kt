@@ -3,6 +3,8 @@ package com.vladpetryshyn.vyao
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.text.Spanned
+import android.text.SpannedString
 import android.util.Log
 import android.util.TypedValue
 import androidx.activity.OnBackPressedCallback
@@ -17,6 +19,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
+import androidx.core.text.HtmlCompat
+import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
+import org.intellij.markdown.html.HtmlGenerator
+import org.intellij.markdown.parser.MarkdownParser
 
 @Composable
 fun BackPressHandler(
@@ -71,4 +77,14 @@ fun getVersionName(context: Context): String {
         Log.d(GET_VERSION_NAME_TAG, e.message.toString())
         "Error"
     }
+}
+
+fun convertMarkdownToHTML(markdownString: String): String {
+    val flavour = CommonMarkFlavourDescriptor()
+    val parsedTree = MarkdownParser(flavour).buildMarkdownTreeFromString(markdownString)
+    return HtmlGenerator(markdownString, parsedTree, flavour).generateHtml()
+}
+fun convertMarkdownToSpannedText(markdownString: String): Spanned {
+    val html = convertMarkdownToHTML(markdownString)
+    return HtmlCompat.fromHtml(html, 0)
 }

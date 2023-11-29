@@ -11,6 +11,7 @@ import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Build
+import android.text.Html
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
@@ -18,6 +19,8 @@ import androidx.work.WorkerParameters
 import com.vladpetryshyn.vyao.MainActivity
 import com.vladpetryshyn.vyao.NOTIFICATION_CHANNEL
 import com.vladpetryshyn.vyao.R
+import com.vladpetryshyn.vyao.convertMarkdownToHTML
+import com.vladpetryshyn.vyao.convertMarkdownToSpannedText
 
 class NotifyWork(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
     override suspend fun doWork(): Result {
@@ -39,11 +42,12 @@ class NotifyWork(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         // val bitmap = applicationContext.vectorToBitmap(R.drawable.ic_schedule_black_24dp)
         val titleNotification = inputData.getString(TASK_TITLE)
         val subtitleNotification = inputData.getString(TASK_DESCRIPTION)
+        val notificationMessage = convertMarkdownToSpannedText(subtitleNotification ?: "")
         val pendingIntent = getActivity(applicationContext, 0, intent, FLAG_IMMUTABLE)
         val notification = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL)
             //.setLargeIcon(bitmap)
             .setSmallIcon(R.drawable.schedule_24px)
-            .setContentTitle(titleNotification).setContentText(subtitleNotification)
+            .setContentTitle(titleNotification).setContentText(notificationMessage)
             .setDefaults(DEFAULT_ALL).setContentIntent(pendingIntent).setAutoCancel(true)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
