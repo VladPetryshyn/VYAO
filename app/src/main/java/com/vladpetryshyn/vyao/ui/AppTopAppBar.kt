@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -47,7 +48,8 @@ import com.vladpetryshyn.vyao.getVersionName
 @ExperimentalMaterial3Api
 fun VyaoAppTopAppBar(
     title: String,
-    viewModel: AppTopBarViewModel = hiltViewModel()
+    viewModel: AppTopBarViewModel = hiltViewModel(),
+    goToSettings: () -> Unit
 ) {
     val userAvatar = viewModel.userAvatar.collectAsState().value
     val context = LocalContext.current
@@ -100,58 +102,8 @@ fun VyaoAppTopAppBar(
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center,
         )
-        var isMenuShown by remember {mutableStateOf(false)}
-        var isInfoModalShown by remember {mutableStateOf(false)}
-        Box {
-            IconButton(onClick = { isMenuShown = !isMenuShown }) {
-                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
-            }
-            DropdownMenu(expanded = isMenuShown, onDismissRequest = { isMenuShown = false }) {
-                DropdownMenuItem(text = { Text(stringResource(id = R.string.info)) }, onClick = { isInfoModalShown = true })
-            }
-        }
-
-        if (isInfoModalShown) {
-            InfoModal {
-                isInfoModalShown = false
-            }
+        IconButton(onClick = goToSettings) {
+            Icon(imageVector = Icons.Default.Settings, contentDescription = "")
         }
     }
-}
-
-@Composable
-fun InfoModal(
-    onDismiss: () -> Unit,
-) {
-    val context = LocalContext.current
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        icon = { Icon(Icons.Filled.Info, contentDescription = null) },
-        title = {
-            Text(text = stringResource(id = R.string.info))
-        },
-        text = {
-            val versionName = getVersionName(context)
-            Text(stringResource(id = R.string.version, versionName))
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onDismiss()
-                }
-            ) {
-                Text(stringResource(id = R.string.ok))
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismiss()
-                }
-            ) {
-                Text(stringResource(id = R.string.dismiss))
-            }
-        }
-    )
-
 }
