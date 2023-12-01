@@ -73,7 +73,6 @@ import com.vladpetryshyn.vyao.ChangeNavigationColor
 import com.vladpetryshyn.vyao.R
 
 
-val topAppBarAndBottomAppBar = -64.dp - 80.dp
 @Composable
 @ExperimentalMaterial3Api
 fun UpdateTaskScreen(
@@ -92,7 +91,6 @@ fun UpdateTaskScreen(
     }
 
     val scrollStateVertical = rememberScrollState()
-    val scrollStateHorizontal = rememberScrollState()
     val primaryColor = MaterialTheme.colorScheme.primary
     Scaffold(
         topBar = {

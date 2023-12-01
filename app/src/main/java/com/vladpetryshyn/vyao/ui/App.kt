@@ -33,6 +33,7 @@ import com.vladpetryshyn.vyao.ChangeNavigationColor
 import com.vladpetryshyn.vyao.R
 import com.vladpetryshyn.vyao.ui.calendar.CalendarScreen
 import com.vladpetryshyn.vyao.ui.notebooks.NotebooksScreen
+import com.vladpetryshyn.vyao.ui.settings.SettingsNavigation
 import com.vladpetryshyn.vyao.ui.tasks.TasksScreen
 import com.vladpetryshyn.vyao.ui.updateTask.UpdateTaskScreen
 
@@ -45,6 +46,7 @@ sealed class Screens(val route: String) {
     object UpdateTask: Screens("UpdateTask/{notebookTitle}/{taskId}")
     object CreateTask: Screens("UpdateTask/{notebookTitle}")
     object AddEvent: Screens("AddEvent?date={date}&taskId={taskId}")
+    object Settings: Screens("Settings")
 }
 
 
@@ -57,7 +59,7 @@ fun VyaoApp(
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
-    val bottomBarTabs = listOf(Screens.CreateTask.route, Screens.UpdateTask.route, Screens.AddEvent.route)
+    val bottomBarTabs = listOf(Screens.CreateTask.route, Screens.UpdateTask.route, Screens.AddEvent.route, Screens.Settings.route)
     val showBottomMenu = navBackStackEntry?.destination?.route !in bottomBarTabs
     val showTopMenu = showBottomMenu && navBackStackEntry?.destination?.route != Screens.Calendar.route
 
@@ -94,7 +96,8 @@ fun VyaoApp(
                             stringResource(R.string.notebooks)
                         } else {
                             ""
-                        }
+                        },
+                        goToSettings = {navController.navigate(Screens.Settings.route)}
                     )
                 }
             }
@@ -162,6 +165,11 @@ fun VyaoApp(
                     navigateBack = navController::popBackStack,
                     goToTaskCreate = {navController.navigate("UpdateTask/$todoNotebook")},
                     isTodoSelected = todoNotebook != "" && todoNotebook != null
+                )
+            }
+            composable(route = Screens.Settings.route) {
+                SettingsNavigation(
+                    navigateBackToApp = {navController.popBackStack()}
                 )
             }
         }
