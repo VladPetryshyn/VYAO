@@ -123,6 +123,13 @@ dependencies {
 
     // icons
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
+    // Flow Charts
+    // For Jetpack Compose.
+    implementation("com.patrykandpatrick.vico:compose:1.13.0")
+
+    // For `compose`. Creates a `ChartStyle` based on an M3 Material Theme.
+    implementation("com.patrykandpatrick.vico:compose-m3:1.13.0")
 }
 
 kapt {
